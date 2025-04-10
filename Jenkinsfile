@@ -3,7 +3,7 @@ pipeline{
             label 'agent-1'
     }
     options {
-        timeout(time: 5, unit: 'MINUTES')
+        timeout(time: 10, unit: 'MINUTES')
         disableConcurrentBuilds()
     }
     environment {
@@ -24,7 +24,7 @@ pipeline{
         stage ('Docker build'){
             steps {
                 sh """
-                docker buils -t bhavyasomisetti/backend:${appVersion}
+                docker build -t bhavyasomisetti/backend:${appVersion}
                 docker images
                 """
             }
