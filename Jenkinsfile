@@ -21,6 +21,14 @@ pipeline{
                 }
             }
         }
+        stage ('Docker build'){
+            steps {
+                sh """
+                docker buils -t bhavyasomisetti/backend:${appVersion}
+                docker images
+                """
+            }
+        }
         stage('Build') {
             steps {
                 sh 'echo this is build'
