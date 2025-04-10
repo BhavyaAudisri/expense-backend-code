@@ -1,0 +1,52 @@
+pipeline{
+    agent {
+            label 'agent-1'
+    }
+    options {
+        timeout(time: 5, unit: 'MINUTES')
+        disableConcurrentBuilds()
+    }
+    environment {
+        DEBUG = 'true'
+    }
+    
+    stages {
+        stage('Build') {
+            steps {
+                sh 'echo this is build'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'echo this is Test'
+            }
+        }
+        stage('Deploy') {
+             when {
+                //branch 'production'
+                 expression { env.GIT_BRANCH == "origin/main" }
+            }
+            steps {
+                sh 'echo this is deploy'
+            }
+        }
+        stage('scan') {
+            steps {
+                sh 'echo this is scan'
+            }
+        }
+        
+    }
+    post {
+        always {
+            echo " this section runs always"
+            deleteDir()
+        }
+        success {
+            echo " this section run when pipeline is success"
+        }
+        failure {
+            echo " this section run when pipeline is failure"
+        }
+    }
+}
