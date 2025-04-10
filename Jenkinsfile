@@ -24,8 +24,8 @@ pipeline{
         stage ('Docker build'){
             steps {
                 sh """
-                docker build -t bhavyasomisetti/backend:${appVersion} .
-                docker images
+                sudo docker build -t bhavyasomisetti/backend:${appVersion} .
+                sudo docker images
                 """
             }
         }
