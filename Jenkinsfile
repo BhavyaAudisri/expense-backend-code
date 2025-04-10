@@ -34,11 +34,7 @@ pipeline{
                 """
             }
         }
-        stage('Build') {
-            steps {
-                sh 'echo this is build'
-            }
-        }
+        
         stage('Test') {
             steps {
                 sh 'echo this is Test'
