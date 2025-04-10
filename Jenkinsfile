@@ -8,9 +8,19 @@ pipeline{
     }
     environment {
         DEBUG = 'true'
+        appVersion = '' //this will become global, we can use across pipeline
     }
     
     stages {
+        stage ('read the version'){
+            steps {
+                scripts {
+                    def packageJson = readJSON file:'package,json'
+                    appVersion = packageJson.version
+                    echo "AppVersion : ${appVersion}"
+                }
+            }
+        }
         stage('Build') {
             steps {
                 sh 'echo this is build'
