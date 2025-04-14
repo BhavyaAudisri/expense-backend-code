@@ -1,0 +1,6 @@
+deployment:
+  replicas: 2
+  version: IMAGE_VERSION
+  image_URL: 124355635734.dkr.ecr.us-east-1.amazonaws.com/expense/dev/backend
+configmap:
+  db_host: mysql-dev.somisettibhavya.life

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: expense
+  # labels of deployment resource
+  labels:
+    app: backend
+    tier: backend
+    project: expense
+spec:
+  replicas: {{ .Values.deployment.replicas }}
+  selector:
+    matchLabels:
+      app: backend
+      tier: backend
+      project: expense
+  template:
+    metadata:
+      labels:
+        app: backend
+        tier: backend
+        project: expense
+    spec:
+      containers:
+      - name: nginx
+        image: "{{ .Values.deployment.image_URL }}:{{ .Values.deployment.version }}"
+        resources:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 100m
+          memory: 128Mi
+        envFrom:
+        - configMapRef:
+            name: backend
