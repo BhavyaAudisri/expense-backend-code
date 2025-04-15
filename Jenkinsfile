@@ -34,12 +34,12 @@ pipeline{
         stage ('Docker build'){
             steps {
                 withAWS(region:'us-east-1', credentials :'AWS-CREDS') {
-                sh """
-                aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin 124355635734.dkr.ecr.us-east-1.amazonaws.com
-                sudo docker build -t ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${environment}/${component}:${appVersion} .
-                sudo docker images
-                sudo docker push ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${environment}/${component}:${appVersion}
-                """
+                    sh """
+                        aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin 124355635734.dkr.ecr.us-east-1.amazonaws.com
+                        sudo docker build -t ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${environment}/${component}:${appVersion} .
+                        sudo docker images
+                        sudo docker push ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${environment}/${component}:${appVersion}
+                    """
             }
             }
         }
@@ -53,12 +53,12 @@ pipeline{
             
             steps {
                 withAWS(region:'us-east-1', credentials :'AWS-CREDS') {
-                sh """
-                    aws eks update-kubeconfig --region ${region} --name ${project}-${environment}
-                    cd helm
-                    sed -i 's/IMAGE_VERSION/${appVersion}/g' values-${environment}.yaml
-                    helm upgrade --install ${component} -n ${project} -f values-${environment}.yaml .
-                """
+                    sh """
+                        aws eks update-kubeconfig --region ${region} --name ${project}-${environment}
+                        cd helm
+                        sed -i 's/IMAGE_VERSION/${appVersion}/g' values-${environment}.yaml
+                        helm upgrade --install ${component} -n ${project} -f values-${environment}.yaml .
+                    """
             }
         }
         }
