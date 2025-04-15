@@ -60,6 +60,7 @@ pipeline{
                 """
             }
         }
+        }
         stage('scan') {
             steps {
                 sh 'echo this is scan'
