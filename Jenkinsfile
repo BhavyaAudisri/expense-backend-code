@@ -81,4 +81,3 @@ pipeline{
             echo " this section run when pipeline is failure"
         }
     }
-}
