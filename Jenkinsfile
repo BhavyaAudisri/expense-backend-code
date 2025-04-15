@@ -50,8 +50,9 @@ pipeline{
             }
         }
         stage('Deploy') {
-             withAWS(region:'us-east-1', credentials :'AWS-CREDS') {
+            
             steps {
+                withAWS(region:'us-east-1', credentials :'AWS-CREDS') {
                 sh """
                     aws eks update-kubeconfig --region ${region} --name ${project}-${environment}
                     cd helm
