@@ -38,7 +38,7 @@ pipeline{
                 aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin 124355635734.dkr.ecr.us-east-1.amazonaws.com
                 sudo docker build -t ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${environment}/${component}:${appVersion} .
                 sudo docker images
-                sudo docker push ${account_id}.dkr.ecr.us-east-1.amazonaws.com/expense/dev/backend:${appVersion}
+                sudo docker push ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${environment}/${component}:${appVersion}
                 """
             }
             }
