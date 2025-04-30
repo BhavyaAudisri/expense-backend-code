@@ -7,6 +7,5 @@ RUN npm install
 ENV DB_HOST="mysql"
 #ENV DB_HOST="localhost"
 CMD ["node", "index.js"]
-RUN useradd expense
+RUN useradd -m expense
 USER expense
-CMD ["sleep", "100"]
