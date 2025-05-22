@@ -155,7 +155,7 @@ EOF
                         
                         echo "Verifying file on Bastion..."
                         sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST "ls -lh /tmp/helm.sh"
-                        bash ingress.sh
+                        sh ingress.sh
                         
                      '''
                     }
