@@ -17,4 +17,4 @@ FLUSH PRIVILEGES;
 EOF
 
 mysql -h mysql-dev.somisettibhavya.life -u root -pExpenseApp1 < backend.sql
-mysql -h mysql-dev.somisettibhavya.life -u expense -pExpenseApp@1
+#mysql -h mysql-dev.somisettibhavya.life -u expense -pExpenseApp@1
