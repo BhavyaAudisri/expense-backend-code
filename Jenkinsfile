@@ -21,16 +21,30 @@ pipeline{
     }
      
     stages {
-        stage ('bastion login'){
+        stage ('bastion login') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                        sh """
-                            sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST 
-                            echo "Logged in to EC2 successfully!"                             
-                        """
-                    }
+                withCredentials([
+                    string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY'),
+                    string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_KEY'),
+                    usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
+                ]) {
+                    sh """
+                        sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST bash -s << 'ENDSSH'
+                        echo "Logged in to EC2 successfully!"
+
+                        # Export AWS credentials for the script
+                        export AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+                        export AWS_SECRET_KEY=${AWS_SECRET_KEY}
+
+                        # Run the configure script with env vars available
+                        sh aws-configure.sh
+
+                        ENDSSH
+                    """
+                }
             }
-        }
+}
+
         
         
         stage ('update EKS'){
