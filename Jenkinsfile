@@ -112,12 +112,12 @@ EOF
                         usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
                 ]) {
                     sh '''
-                        sshpass -p  "$PASSWORD" scp -o StrictHostKeyChecking=no backend.sql$USERNAME@$EC2_HOST:/tmp/backend.sql
+                        sshpass -p  "$PASSWORD" scp -o StrictHostKeyChecking=no backend.sql $USERNAME@$EC2_HOST:/tmp/backend.sql
                         '''
 
                         // Execute the SQL file on the remote DB from bastion
                         sh '''
-                        sshpass -p  "$PASSWORD" scp -o StrictHostKeyChecking=no backend.sql$USERNAME@$EC2_HOST bash -c "mysql -h $DB_HOST -uroot -pExpenseApp1 transactions < /tmp/backend.sql"
+                        sshpass -p  "$PASSWORD" scp -o StrictHostKeyChecking=no backend.sql $USERNAME@$EC2_HOST bash -c "mysql -h $DB_HOST -uroot -pExpenseApp1 transactions < /tmp/backend.sql"
                     '''
                 }
             }
