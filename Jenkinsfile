@@ -28,7 +28,7 @@ pipeline{
                     string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY'),
                     usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
                 ]) {
-                    sh '''
+                    sh """
                         sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST bash -s <<EOF
                         echo "Logged in to EC2 successfully!"
 
@@ -43,7 +43,7 @@ pipeline{
                         kubectl get nodes
                         
         EOF
-                    '''
+                    """
                 }
             }
         }
