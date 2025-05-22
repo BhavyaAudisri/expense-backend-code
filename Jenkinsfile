@@ -91,7 +91,7 @@ EOF
                                 sh """
                                     sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST bash -s <<EOF
                                     echo "Logged in to EC2 successfully!"
-                                    mysql -h expense-dev.somisettibhavya.life -u root -pExpenseApp1
+                                    #mysql -h expense-dev.somisettibhavya.life -u root -pExpenseApp1
                                     USE transactions;
                                     CREATE TABLE IF NOT EXISTS transactions (id INT AUTO_INCREMENT PRIMARY KEY,amount INT,description VARCHAR(255));
                                     CREATE USER IF NOT EXISTS 'expense'@'%' IDENTIFIED BY 'ExpenseApp@1';
