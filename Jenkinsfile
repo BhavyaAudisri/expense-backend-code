@@ -136,10 +136,8 @@ EOF
                         sshpass -p "$PASSWORD" scp -o StrictHostKeyChecking=no ingress.sh $USERNAME@$EC2_HOST:/tmp/ingress.sh
                         
                         echo "Verifying file on Bastion..."
-                        sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST "ls -lh /tmp/ingress.sh"
-                        sh ingress.sh
-
-
+                        sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST 'bash /tmp/ingress.sh'
+                        
                      '''
                     }
                 }
@@ -154,9 +152,8 @@ EOF
                         sshpass -p "$PASSWORD" scp -o StrictHostKeyChecking=no helm.sh $USERNAME@$EC2_HOST:/tmp/helm.sh
                         
                         echo "Verifying file on Bastion..."
-                        sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST "ls -lh /tmp/helm.sh"
-                        sh helm.sh
-                        
+                        sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST 'bash /tmp/helm.sh'
+                                                
                      '''
                     }
                 }
