@@ -106,18 +106,19 @@ EOF
             } */
             stage('Upload & Run SQL') {
                 steps {
-                    withCredentials([
-                        usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
+                     withCredentials([
+                     usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
                     ]) {
-                        sh '''
-                            echo "Uploading SQL file to Bastion..."
-                            sshpass -p "$PASSWORD" scp -o StrictHostKeyChecking=no backend.sql $USERNAME@$EC2_HOST:/tmp/backend.sql
+                     sh '''
+                        echo "Checking if backend.sql exists locally..."
+                        ls -lh backend.sql
 
-                            echo "Executing SQL file on RDS from Bastion..."
-                            sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST <<EOF
-                                mysql -h mysql-dev.somisettibhavya.life -u root -pExpenseApp1 transactions < /tmp/backend.sql
-EOF
-                         '''
+                        echo "Copying SQL file to Bastion..."
+                        sshpass -p "$PASSWORD" scp -o StrictHostKeyChecking=no backend.sql $USERNAME@$EC2_HOST:/tmp/backend.sql
+
+                        echo "Verifying file on Bastion..."
+                        sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST "ls -lh /tmp/backend.sql"
+                    '''
         }
     }
 }
