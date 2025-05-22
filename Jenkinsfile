@@ -27,6 +27,9 @@ pipeline{
                         sh """
                             sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST 
                             echo "Logged in to EC2 successfully!"
+                            sh database.sh
+                            sshpass -p "$PASSWORD" sh -c "cat backend.sql | ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST 'mysql -h mysql-dev.somisettibhavya.life -u expense -pExpenseApp1'"
+                            
                         """
                     }
             }
@@ -44,27 +47,7 @@ pipeline{
             }
         }
 
-        stage ('update Schema'){
-            steps {
-                 withAWS(region:'us-east-1', credentials :'AWS-CREDS') {
-                        sh """
-                           sh database.sh
-                        
-                        """
-                    }
-            }
-        }
-        stage ('Mysql login'){
-            steps {
-                  withCredentials([usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                        sh """
-                            sshpass -p "$PASSWORD" sh -c "cat backend.sql | ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST 'mysql -h mysql-dev.somisettibhavya.life -u expense -pExpenseApp1'"
-                        """
-                    }
-            }
-        }
-
-
+        
         /* stage ('read the version'){
             steps {
                 script {
