@@ -22,24 +22,33 @@ pipeline{
      
     stages {
         stage('bastion login') {
-    steps {
-        withAWS(region: 'us-east-1', credentials: 'AWS-CREDS') {
-            withCredentials([
-                usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
-            ]) {
-                sh """
-                    sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST bash -s << 'ENDSSH'
-                    echo "Logged in to EC2 successfully!"
+            steps {
+                withCredentials([
+                    string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
+                    string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY'),
+                    usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
+                ]) {
+                    sh """
+                        sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST bash -s <<EOF
+                        echo "Logged in to EC2 successfully!"
 
-                    # AWS credentials are automatically exported by withAWS
-                    aws sts get-caller-identity
+                        # Export AWS credentials for this session
+                        export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+                        export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+                        export AWS_DEFAULT_REGION=us-east-1
 
-                    ENDSSH
-                """
+                        # AWS operations
+                        aws sts get-caller-identity
+                        aws eks update-kubeconfig --region us-east-1 --name expense-dev
+                        kubectl get nodes
+                        
+                        EOF
+                    """
+                }
             }
         }
-    }
-}
+
+
 
         
         
