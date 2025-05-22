@@ -119,8 +119,8 @@ EOF
                         echo "Verifying file on Bastion..."
                         sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST "ls -lh /tmp/backend.sql"
                         echo "Running SQL script on remote MySQL server from Bastion..."
-                        sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST \\
-                        "mysql -h mysql-dev.somisettibhavya.life -u expense -pExpenseApp1 transactions < /tmp/backend.sql"
+                        sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST
+                        mysql -h mysql-dev.somisettibhavya.life -u expense -pExpenseApp@1
             
                     '''
         }
