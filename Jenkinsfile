@@ -122,10 +122,7 @@ EOF
                 }
             }
         }
-    }
-}
-
-
+    
         /* stage ('read the version'){
             steps {
                 script {
