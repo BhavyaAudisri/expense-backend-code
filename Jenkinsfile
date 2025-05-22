@@ -126,6 +126,41 @@ EOF
         }
     }
 }
+            stage('setup ingress controller') {
+                steps {
+                     withCredentials([
+                     usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
+                    ]) {
+                     sh '''
+                        echo "Copying Ingress file to Bastion..."
+                        sshpass -p "$PASSWORD" scp -o StrictHostKeyChecking=no ingress.sh $USERNAME@$EC2_HOST:/tmp/ingress.sh
+                        
+                        echo "Verifying file on Bastion..."
+                        sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST "ls -lh /tmp/ingress.sh"
+                        bash ingress.sh
+
+
+                     '''
+                    }
+                }
+            }   
+            stage('Install drivers anh adding repo') {
+                steps {
+                     withCredentials([
+                     usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
+                    ]) {
+                     sh '''
+                        echo "Copying Helm file to Bastion..."
+                        sshpass -p "$PASSWORD" scp -o StrictHostKeyChecking=no helm.sh $USERNAME@$EC2_HOST:/tmp/helm.sh
+                        
+                        echo "Verifying file on Bastion..."
+                        sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST "ls -lh /tmp/helm.sh"
+                        bash ingress.sh
+                        
+                     '''
+                    }
+                }
+            }       
 
         /* stage ('read the version'){
             steps {
