@@ -55,37 +55,29 @@ EOF
                     string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY'),
                     usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
                 ]) {
-                    sh """
-                        sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST <<EOF
-                        echo "Logged into Bastion Host"
+                    sh '''
+                        sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST bash -s <<'EOF'
+                        echo "Logged in to EC2 successfully"
 
-                        mkdir -p /home/ec2-user/aws
+                        mkdir -p ~/.aws
 
-                        # Write credentials file
-                        cd /home/ec2-user/aws
-                        cat > credentials <<EOC
+                        cat > ~/.aws/credentials <<EOL
                         [default]
-                        aws_access_key_id=$AWS_ACCESS_KEY_ID
-                        aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
-EOC
+                        aws_access_key_id = ${AWS_ACCESS_KEY_ID}
+                        aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}
+                        EOL
 
-                         # Write config file
-                        cat > config <<EOC
+                        cat > ~/.aws/config <<EOL
                         [default]
-                        region=us-east-1
-                        output=json
-EOC
+                        region = us-east-1
+                        output = json
+                        EOL
 
-                        # Set secure permissions
-                        chmod 600 credentials config
-
-                        echo "AWS credentials saved permanently on Bastion"
-                        # AWS operations
                         aws sts get-caller-identity
                         aws eks update-kubeconfig --region us-east-1 --name expense-dev
                         kubectl get nodes
 EOF
-                    """
+'''
                 }
             }
         }
