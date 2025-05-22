@@ -48,7 +48,7 @@ pipeline{
             steps {
                  withAWS(region:'us-east-1', credentials :'AWS-CREDS') {
                         sh """
-                           database.sh
+                           sh database.sh
                         """
                     }
             }
