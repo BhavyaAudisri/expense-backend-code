@@ -89,6 +89,34 @@ EOF
                 }
             }
         }
+            stage('Configure schema') {
+                    steps {
+                            withCredentials([
+                                string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
+                                string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY'),
+                                usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
+                            ]) {
+                                sh """
+                                    sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST bash -s <<EOF
+                                    echo "Logged in to EC2 successfully!"
+                                    mysql -h expense-dev.somisettibhavya.life -u root -pExpenseApp1
+                                    USE transactions;
+                                    CREATE TABLE IF NOT EXISTS transactions (
+                                        id INT AUTO_INCREMENT PRIMARY KEY,
+                                        amount INT,
+                                        description VARCHAR(255)
+                                    );
+                                    CREATE USER IF NOT EXISTS 'expense'@'%' IDENTIFIED BY 'ExpenseApp@1';
+                                    GRANT ALL ON transactions.* TO 'expense'@'%';
+                                    FLUSH PRIVILEGES;
+                                    mysql -h mysql-dev.somisettibhavya.life -u root -pExpenseApp1 < backend.sql
+                                    mysql -h mysql-dev.somisettibhavya.life -u expense -pExpenseApp@1
+EOF
+                                """
+                            }
+                    }
+            }
+
 
         /* stage ('read the version'){
             steps {
