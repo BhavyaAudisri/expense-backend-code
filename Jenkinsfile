@@ -14,13 +14,12 @@ pipeline{
         environment = 'dev'
         component = 'backend'
         account_id = '124355635734'
+        EC2_HOST = "expense-bastion.somisettibhavya.life" // e.g., ec2-34-201-XXX-XXX.compute-1.amazonaws.com
     }
     parameters{
         booleanParam(name: 'deploy', defaultValue: false, description: 'Toggle this value')
     }
-     environment {
-        EC2_HOST = "expense-bastion.somisettibhavya.life" // e.g., ec2-34-201-XXX-XXX.compute-1.amazonaws.com
-    }
+     
     stages {
         stage ('bastion login'){
             steps {
