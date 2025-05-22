@@ -65,13 +65,13 @@ EOF
                         [default]
                         aws_access_key_id = ${AWS_ACCESS_KEY_ID}
                         aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}
-EOL
+                        EOL
 
                         cat > ~/.aws/config <<EOL
                         [default]
                         region = us-east-1
                         output = json
-EOL
+                        EOL
 
                         aws sts get-caller-identity
                         aws eks update-kubeconfig --region us-east-1 --name expense-dev
