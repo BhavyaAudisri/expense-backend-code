@@ -121,7 +121,7 @@ EOF
             }
         }
     }
-}
+
     
 
         /* stage ('read the version'){
