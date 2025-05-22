@@ -58,7 +58,7 @@ pipeline{
             steps {
                   withCredentials([usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         sh """
-                            sshpass -p "$PASSWORD" cat backend.sql | ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST 'mysql -h mysql-dev.somisettibhavya.life -u expense -pExpenseApp1'
+                            sshpass -p "$PASSWORD" sh -c "cat backend.sql | ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST 'mysql -h mysql-dev.somisettibhavya.life -u expense -pExpenseApp1'"
                         """
                     }
             }
