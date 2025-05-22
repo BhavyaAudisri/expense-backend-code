@@ -48,6 +48,48 @@ EOF
             }
         }
 
+        stage('Configure AWS on Bastion') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
+                    string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY'),
+                    usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
+                ]) {
+                    sh """
+                        sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST <<EOF
+                        echo "Logged into Bastion Host"
+
+                        mkdir -p /home/ec2-user/aws
+
+                        # Write credentials file
+                        cd /home/ec2-user/aws
+                        cat > credentials <<EOC
+                        [default]
+                        aws_access_key_id=$AWS_ACCESS_KEY_ID
+                        aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
+EOC
+
+                         # Write config file
+                        cat > config <<EOC
+                        [default]
+                        region=us-east-1
+                        output=json
+EOC
+
+                        # Set secure permissions
+                        chmod 600 credentials config
+
+                        echo "AWS credentials saved permanently on Bastion"
+                        # AWS operations
+                        aws sts get-caller-identity
+                        aws eks update-kubeconfig --region us-east-1 --name expense-dev
+                        kubectl get nodes
+EOF
+                    """
+                }
+            }
+        }
+
         /* stage ('read the version'){
             steps {
                 script {
