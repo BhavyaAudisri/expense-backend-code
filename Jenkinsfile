@@ -24,8 +24,8 @@ pipeline{
         stage ('bastion login') {
             steps {
                 withAWS([
-                    string(credentialsId: 'AWS-CREDS', variable: 'AWS_ACCESS_KEY'),
-                    string(credentialsId: 'AWS-CREDS', variable: 'AWS_SECRET_KEY'),
+                    string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY'),
+                    string(credentialsId: 'AWS-secret-key', variable: 'AWS_SECRET_KEY'),
                     usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
                 ]) {
                     sh """
