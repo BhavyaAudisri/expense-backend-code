@@ -1,7 +1,7 @@
 #!/bin/bash
 #configure backend
 #=================
-vim backend.sql
+vi backend.sql
 CREATE DATABASE IF NOT EXISTS transactions;
 USE transactions;
 
