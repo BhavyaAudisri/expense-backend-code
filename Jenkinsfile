@@ -28,7 +28,7 @@ pipeline{
                             sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST 
                             echo "Logged in to EC2 successfully!"
                             sh database.sh
-                            sshpass -p "$PASSWORD" sh -c "cat backend.sql | ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST 'mysql -h mysql-dev.somisettibhavya.life -u expense -pExpenseApp1'"
+                            sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST 'mysql -h mysql-dev.somisettibhavya.life -u expense -pExpenseApp1'"
                             
                         """
                     }
