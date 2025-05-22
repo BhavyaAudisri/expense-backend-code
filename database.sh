@@ -15,3 +15,4 @@ CREATE USER IF NOT EXISTS 'expense'@'%' IDENTIFIED BY 'ExpenseApp1';
 GRANT ALL ON transactions.* TO 'expense'@'%';
 FLUSH PRIVILEGES;
 EOF
+mysql -h mysql-dev.somisettibhavya.life -u root -pExpenseApp1 < backend.sql
