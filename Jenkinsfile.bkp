@@ -15,9 +15,6 @@ pipeline{
         component = 'backend'
         account_id = '124355635734'
     }
-    parameters{
-        booleanParam(name: 'deploy', defaultValue: false, description: 'Toggle this value')
-    }
     
     stages {
         stage ('read the version'){
@@ -52,13 +49,18 @@ pipeline{
                 sh 'echo this is Test'
             }
         }
-        stage('Trigger Deploy'){
-            when { 
-                expression { params.deploy }
+        stage('Deploy') {
+            
+            steps {
+                withAWS(region:'us-east-1', credentials :'AWS-CREDS') {
+                    sh """
+                        aws eks update-kubeconfig --region ${region} --name ${project}-${environment}
+                        cd helm
+                        sed -i 's/IMAGE_VERSION/${appVersion}/g' values-${environment}.yaml
+                        helm upgrade --install ${component} -n ${project} -f values-${environment}.yaml .
+                    """
             }
-            steps{
-                build job: 'backend-cd', parameters: [string(name: 'version', value: "${appVersion}")], wait: true
-            }
+        }
         }
         stage('scan') {
             steps {
