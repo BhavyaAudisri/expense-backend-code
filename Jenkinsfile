@@ -48,22 +48,6 @@ EOF
             }
         }
 
-
-
-        
-        
-       /*  stage ('update EKS'){
-            steps {
-                 withAWS(region:'us-east-1', credentials :'AWS-CREDS') {
-                        sh """
-                           aws eks update-kubeconfig --region us-east-1 --name expense-dev
-                           kubectl get nodes
-                        """
-                    }
-            }
-        }
- */
-        
         /* stage ('read the version'){
             steps {
                 script {
