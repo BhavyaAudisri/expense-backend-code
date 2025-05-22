@@ -25,8 +25,7 @@ pipeline{
             steps {
                 withCredentials([usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         sh """
-                            sshpass -p "$PASSWORD" 
-                            ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST 
+                            sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST 
                             echo "Logged in to EC2 successfully!"
                         """
                     }
