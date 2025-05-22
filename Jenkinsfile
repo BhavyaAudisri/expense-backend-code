@@ -49,12 +49,22 @@ pipeline{
                  withAWS(region:'us-east-1', credentials :'AWS-CREDS') {
                         sh """
                            sh database.sh
-                           mysql -h mysql-dev.somisettibhavya.life -u root -pExpenseApp1 < backend.sql
-                           mysql -h mysql-dev.somisettibhavya.life -u expense -pExpenseApp@1
+                        
                         """
                     }
             }
         }
+        stage ('Mysql login'){
+            steps {
+                  withCredentials([usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        sh """
+                            sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST \\
+                                     "mysql -h mysql-dev.somisettibhavya.life -u expense -pExpenseApp@1 -e 'SHOW DATABASES;'"
+                        """
+                    }
+            }
+        }
+
 
         /* stage ('read the version'){
             steps {
