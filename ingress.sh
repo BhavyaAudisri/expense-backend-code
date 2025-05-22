@@ -4,6 +4,8 @@
 REGION_CODE=us-east-1
 CLUSTER_NAME=expense-dev
 ACC_ID=124355635734
+ARCH=amd64
+PLATFORM=$(uname -s)_$ARCH
 
 ### Permissions
 
