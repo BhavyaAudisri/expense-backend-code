@@ -37,7 +37,7 @@ pipeline{
                         export AWS_SECRET_KEY=${AWS_SECRET_KEY}
 
                         # Run the configure script with env vars available
-                        sh aws-configure.sh
+                        #sh aws-configure.sh
 
                         ENDSSH
                     """
