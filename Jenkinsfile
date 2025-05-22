@@ -18,8 +18,44 @@ pipeline{
     parameters{
         booleanParam(name: 'deploy', defaultValue: false, description: 'Toggle this value')
     }
-    
+     environment {
+        EC2_HOST = "expense-bastion.somisettibhavya.life" // e.g., ec2-34-201-XXX-XXX.compute-1.amazonaws.com
+    }
     stages {
+        stage ('bastion login'){
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        sh """
+                            sshpass -p "$PASSWORD" 
+                            ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST 
+                            echo "Logged in to EC2 successfully!"
+                        """
+                    }
+            }
+        }
+        
+        
+        stage ('update EKS'){
+            steps {
+                 withAWS(region:'us-east-1', credentials :'AWS-CREDS') {
+                        sh """
+                           aws eks update-kubeconfig --region us-east-1 --name expense-dev
+                           kubectl get nodes
+                        """
+                    }
+            }
+        }
+
+        stage ('update Schema'){
+            steps {
+                 withAWS(region:'us-east-1', credentials :'AWS-CREDS') {
+                        sh """
+                           database.sh
+                        """
+                    }
+            }
+        }
+
         stage ('read the version'){
             steps {
                 script {
