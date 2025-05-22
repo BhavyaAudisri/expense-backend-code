@@ -82,7 +82,7 @@ EOF
                 }
             }
         }
-            stage('Configure schema') {
+            /* stage('Configure schema') {
                     steps {
                             withCredentials([
                                 string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
@@ -103,7 +103,7 @@ EOF
                                 '''
                             }
                     }
-            }
+            } */
             stage('Update MySQL Schema') {
             steps {
                 withCredentials([
