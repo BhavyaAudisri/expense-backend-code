@@ -15,6 +15,7 @@ pipeline{
         component = 'backend'
         account_id = '124355635734'
         EC2_HOST = "expense-bastion.somisettibhavya.life" // e.g., ec2-34-201-XXX-XXX.compute-1.amazonaws.com
+        DB_HOST = "mysql-dev.somisettibhavya.life"
     }
     parameters{
         booleanParam(name: 'deploy', defaultValue: false, description: 'Toggle this value')
@@ -103,6 +104,26 @@ EOF
                             }
                     }
             }
+            stage('Update MySQL Schema') {
+            steps {
+                withCredentials([
+                        string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
+                        string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY'),
+                        usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
+                ]) {
+                    sh '''
+                        sshpass -p  "$PASSWORD" scp -o StrictHostKeyChecking=no backend.sql$USERNAME@$EC2_HOST:/tmp/backend.sql
+                        '''
+
+                        // Execute the SQL file on the remote DB from bastion
+                        sh '''
+                        sshpass -p  "$PASSWORD" scp -o StrictHostKeyChecking=no backend.sql$USERNAME@$EC2_HOST bash -c "mysql -h $DB_HOST -uroot -pExpenseApp1 transactions < /tmp/backend.sql"
+                    '''
+                }
+            }
+        }
+    }
+}
 
 
         /* stage ('read the version'){
