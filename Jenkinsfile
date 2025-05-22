@@ -104,25 +104,24 @@ EOF
                             }
                     }
             } */
-            stage('Update MySQL Schema') {
-            steps {
-                withCredentials([
-                        string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
-                        string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY'),
+            stage('Upload & Run SQL') {
+                steps {
+                    withCredentials([
                         usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
-                ]) {
-                    sh '''
-                        sshpass -p  "$PASSWORD" scp -o StrictHostKeyChecking=no backend.sql $USERNAME@$EC2_HOST:/tmp/backend.sql
-                        '''
-
-                        // Execute the SQL file on the remote DB from bastion
+                    ]) {
                         sh '''
-                        sshpass -p  "$PASSWORD" scp -o StrictHostKeyChecking=no backend.sql $USERNAME@$EC2_HOST bash -c "mysql -h $DB_HOST -uroot -pExpenseApp1 transactions < /tmp/backend.sql"
-                    '''
-                }
-            }
+                            echo "Uploading SQL file to Bastion..."
+                            sshpass -p "$PASSWORD" scp -o StrictHostKeyChecking=no backend.sql $USERNAME@$EC2_HOST:/tmp/backend.sql
+
+                            echo "Executing SQL file on RDS from Bastion..."
+                            sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST <<EOF
+                                mysql -h mysql-dev.somisettibhavya.life -u root -pExpenseApp1 transactions < /tmp/backend.sql
+EOF
+                         '''
         }
-    
+    }
+}
+
         /* stage ('read the version'){
             steps {
                 script {
