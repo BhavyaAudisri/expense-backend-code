@@ -1,6 +1,6 @@
 #!/bin/bash
-#configure backend
-#=================
+
+# Create backend.sql
 cat <<EOF > backend.sql
 CREATE DATABASE IF NOT EXISTS transactions;
 USE transactions;
@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     description VARCHAR(255)
 );
 
-CREATE USER IF NOT EXISTS 'expense'@'%' IDENTIFIED BY 'ExpenseApp@1';
+CREATE USER IF NOT EXISTS 'expense'@'%' IDENTIFIED BY 'ExpenseApp1';
 GRANT ALL ON transactions.* TO 'expense'@'%';
 FLUSH PRIVILEGES;
 EOF
