@@ -1,7 +1,7 @@
 #!/bin/bash
 #configure backend
 #=================
-vi backend.sql
+cat <<EOF > backend.sql
 CREATE DATABASE IF NOT EXISTS transactions;
 USE transactions;
 
@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS transactions (
 CREATE USER IF NOT EXISTS 'expense'@'%' IDENTIFIED BY 'ExpenseApp@1';
 GRANT ALL ON transactions.* TO 'expense'@'%';
 FLUSH PRIVILEGES;
+EOF
 
 mysql -h mysql-dev.somisettibhavya.life -u root -pExpenseApp1 < backend.sql
-mysql -h mysql-dev.somisettibhavya.life -u expense -pExpenseApp@1
+mysql -h mysql-dev.somisettibhavya.life -u expense -pExpenseApp@1 -e "show databases;"
