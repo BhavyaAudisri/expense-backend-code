@@ -16,39 +16,18 @@ pipeline{
         account_id = '124355635734'
         EC2_HOST = "expense-bastion.somisettibhavya.life" // e.g., ec2-34-201-XXX-XXX.compute-1.amazonaws.com
         DB_HOST = "mysql-dev.somisettibhavya.life"
+        REGION_CODE = 'us-east-1'
+        CLUSTER_NAME = 'expense-dev'
+        ACC_ID = '124355635734'
+        ARCH = 'amd64'
+        PLATFORM = '$(uname -s)_$ARCH'
+
     }
     parameters{
         booleanParam(name: 'deploy', defaultValue: false, description: 'Toggle this value')
     }
      
     stages {
-        /* stage('bastion login') {
-            steps {
-                withCredentials([
-                    string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
-                    string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY'),
-                    usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
-                ]) {
-                    sh """
-                        sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST bash -s <<EOF
-                        echo "Logged in to EC2 successfully!"
-
-                        # Export AWS credentials for this session
-                        export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-                        export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-                        export AWS_DEFAULT_REGION=us-east-1
-
-                        # AWS operations
-                        aws sts get-caller-identity
-                        aws eks update-kubeconfig --region us-east-1 --name expense-dev
-                        kubectl get nodes
-                        
-EOF
-"""
-                }
-            }
-        } */
-
         stage('Configure AWS on Bastion') {
             steps {
                 withCredentials([
@@ -82,31 +61,10 @@ EOF
                 }
             }
         }
-            /* stage('Configure schema') {
-                    steps {
-                            withCredentials([
-                                string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
-                                string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY'),
-                                usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
-                            ]) {
-                                sh '''
-                                    sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST bash -s <<'EOF'
-                                    echo "Logged in to EC2 successfully!"
-                                    mysql -h expense-dev.somisettibhavya.life -u root -pExpenseApp1
-                                    USE transactions;
-                                    CREATE TABLE IF NOT EXISTS transactions (id INT AUTO_INCREMENT PRIMARY KEY,amount INT,description VARCHAR(255));
-                                    CREATE USER IF NOT EXISTS 'expense'@'%' IDENTIFIED BY 'ExpenseApp@1';
-                                    GRANT ALL ON transactions.* TO 'expense'@'%';
-                                    FLUSH PRIVILEGES;
-                                    mysql -h mysql-dev.somisettibhavya.life -u expense -pExpenseApp@1
-EOF
-                                '''
-                            }
-                    }
-            } */
-            stage('Upload & Run SQL') {
-                steps {
-                     withCredentials([
+           
+        stage('Upload & Run SQL') {
+            steps {
+                withCredentials([
                      usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
                     ]) {
                      sh '''
@@ -126,46 +84,13 @@ EOF
         }
     }
 }
-            stage('setup ingress controller') {
-                steps {
-                     withCredentials([
-                     usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
+        stage('Run Ingress Controller Script on Bastion') {
+            steps {
+                withCredentials([
+                    usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
                     ]) {
-                     sh '''
-                        echo "Copying Ingress file to Bastion..."
-                        sshpass -p "$PASSWORD" scp -o StrictHostKeyChecking=no ingress.sh $USERNAME@$EC2_HOST:/tmp/ingress.sh
-                        
-                        echo "Verifying file on Bastion..."
-                        sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST 'bash /tmp/ingress.sh'
-                        
-                     '''
-                    }
-                }
-            }   
-            stage('Run Ingress Controller Script on Bastion') {
-                steps {
-                    withCredentials([
-                        usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
-                    ]) {
-                        script {
-                            // Write your script to a file in the Jenkins workspace
-                            writeFile file: 'ingress.sh', text: '''#!/bin/bash
-                            REGION_CODE=us-east-1
-                            CLUSTER_NAME=expense-dev
-                            ACC_ID=124355635734
-                            ARCH=amd64
-                            PLATFORM=$(uname -s)_$ARCH
-
-                            # kubectl installation
-                            curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.32.0/2024-12-20/bin/linux/amd64/kubectl
-                            chmod +x ./kubectl
-                            mv kubectl /usr/local/bin/kubectl
-
-                            # eksctl installation
-                            curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_${PLATFORM}.tar.gz"
-                            tar -xzf eksctl_${PLATFORM}.tar.gz -C /tmp && rm eksctl_${PLATFORM}.tar.gz
-                            mv /tmp/eksctl /usr/local/bin
-
+                        sh '''
+                            sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST
                             # Provide access to EKS through IAM Policy
                             eksctl create iamserviceaccount \\
                             --cluster=$CLUSTER_NAME \\
@@ -175,14 +100,23 @@ EOF
                             --override-existing-serviceaccounts \\
                             --region $REGION_CODE \\
                             --approve
+                            
                 '''
-                // Copy the script to bastion
-                sh '''
-                    sshpass -p "$PASSWORD" scp -o StrictHostKeyChecking=no ingress.sh $USERNAME@$EC2_HOST:/tmp/ingress.sh
-                '''
-                // Execute the script on bastion with sudo
-                sh '''
-                    sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST "chmod +x /tmp/ingress.sh && sudo /tmp/ingress.sh"
+            }
+        }
+    }
+        stage('Install drivers on Bastion') {
+            steps {
+                withCredentials([
+                    usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
+                    ]) {
+                        sh '''
+                            sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST
+                            helm repo add eks https://aws.github.io/eks-charts
+                            helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=$CLUSTER_NAME --set serviceAccount.create=true --set serviceAccount.name=aws-load-balancer-controller
+                            kubectl get pods -n kube-system
+                            kubectl create namespace expense
+                            
                 '''
             }
         }
