@@ -7,8 +7,8 @@ ACC_ID=124355635734
 
 ### Permissions
 
-* OIDC provider
-```
+#OIDC provider
+
 eksctl utils associate-iam-oidc-provider \
     --region $REGION_CODE \
     --cluster $CLUSTER_NAME \
