@@ -52,7 +52,7 @@ pipeline{
 
         
         
-        stage ('update EKS'){
+       /*  stage ('update EKS'){
             steps {
                  withAWS(region:'us-east-1', credentials :'AWS-CREDS') {
                         sh """
@@ -62,7 +62,7 @@ pipeline{
                     }
             }
         }
-
+ */
         
         /* stage ('read the version'){
             steps {
