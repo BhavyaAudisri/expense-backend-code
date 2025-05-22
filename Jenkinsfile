@@ -42,8 +42,8 @@ pipeline{
                         aws eks update-kubeconfig --region us-east-1 --name expense-dev
                         kubectl get nodes
                         
-        EOF
-                    """
+EOF
+"""
                 }
             }
         }
