@@ -86,9 +86,11 @@ EOF
 }
         stage('Run Ingress Controller Script on Bastion') {
             steps {
-                withCredentials([
+                 withCredentials([
+                    string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
+                    string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY'),
                     usernamePassword(credentialsId: 'ssh-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
-                    ]) {
+                ]) {
                         sh '''
                             sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST
                             sh ./ingress.sh
