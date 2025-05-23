@@ -2,10 +2,7 @@ pipeline{
     agent {
             label 'AGENT-1'
     }
-    options {
-        timeout(time: 10, unit: 'MINUTES')
-        disableConcurrentBuilds()
-    }
+    
     environment {
         DEBUG = 'true'
         appVersion = '' //this will become global, we can use across pipeline
@@ -15,67 +12,86 @@ pipeline{
         COMPONENT = 'backend'
         account_id = '124355635734'
     }
-    
+    options {
+        disableConcurrentBuilds()
+        timeout(time: 30, unit: 'MINUTES')
+    }
+    parameters{
+        booleanParam(name: 'deploy', defaultValue: false, description: 'Toggle this value')
+    }
     stages {
-        stage ('read the version'){
+        stage('Read Version') {
             steps {
-                script {
-                    def packageJson = readJSON file:'package.json'
-                    appVersion = packageJson.version
-                    echo "AppVersion : ${appVersion}"
-                }
+               script{
+                 def packageJson = readJSON file: 'package.json'
+                 appVersion = packageJson.version
+                 echo "Version is: $appVersion"
+               }
             }
         }
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+               script{ 
+                 sh """
+                    npm install
+                 """
+               }
             }
         }
-        stage ('Docker build'){
+        /* stage('Run Sonarqube') {
+            environment {
+                scannerHome = tool 'sonar-scanner-7.1';
+            }
             steps {
-                withAWS(region:'us-east-1', credentials :'AWS-CREDS') {
+              withSonarQubeEnv('sonar-scanner-7.1') {
+                sh "${scannerHome}/bin/sonar-scanner"
+                // This is generic command works for any language
+              }
+            }
+        }
+        stage("Quality Gate") {
+            steps {
+              timeout(time: 1, unit: 'HOURS') {
+                waitForQualityGate abortPipeline: true
+              }
+            }
+        } */
+        stage('Docker Build') {
+            steps {
+               script{
+                withAWS(region: 'us-east-1', credentials: 'aws-creds') {
                     sh """
-                        aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${account_id}.dkr.ecr.us-east-1.amazonaws.com
-                        docker build -t ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${environment}/${COMPONENT}:${appVersion} .
-                        docker images
-                        docker push ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${environment}/${COMPONENT}:${appVersion}
+                    aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com
+
+                    docker build -t  ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${project}/${component}:${appVersion} .
+
+                    docker push ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${project}/${component}:${appVersion}
                     """
-            }
-            }
-        }
-                
-        stage('Test') {
-            steps {
-                sh 'echo this is Test'
+                }
+                 
+               }
             }
         }
-        stage('Deploy') {
-             when { 
+        stage('Trigger Deploy'){
+            when { 
                 expression { params.deploy }
             }
-                steps{
-           
-                    build job: 'backend-cd', parameters: [string(name: 'version', value: "${appVersion}")], wait: true
-                   
+            steps{
+                build job: 'backend-cd', parameters: [string(name: 'version', value: "${appVersion}")], wait: true
             }
         }
-        
-        stage('scan') {
-            steps {
-                sh 'echo this is scan'
-            }
-        }
-}    
-    post {
-        always {
-            echo " this section runs always"
+    }
+    post { 
+        always { 
+            echo 'I will always say Hello again!'
             deleteDir()
         }
-        success {
-            echo " this section run when pipeline is success"
+        failure { 
+            echo 'I will run when pipeline is failed'
         }
-        failure {
-            echo " this section run when pipeline is failure"
+        success { 
+            echo 'I will run when pipeline is success'
         }
     }
 }
+   
