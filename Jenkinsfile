@@ -91,6 +91,7 @@ EOF
                     ]) {
                         sh '''
                             sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST
+                            sh ./ingress.sh
                             # Provide access to EKS through IAM Policy
                             eksctl create iamserviceaccount \\
                             --cluster=$CLUSTER_NAME \\
