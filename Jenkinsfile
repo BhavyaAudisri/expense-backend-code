@@ -65,9 +65,7 @@ pipeline{
                 sh 'echo this is scan'
             }
         }
-        
-    }
-    
+            
     post {
         always {
             echo " this section runs always"
