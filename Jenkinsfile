@@ -118,6 +118,7 @@ EOF
                         sh '''
                             sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST
                             helm repo add eks https://aws.github.io/eks-charts
+                            helm uninstall aws-load-balancer-controller -n kube-system
                             helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=$CLUSTER_NAME --set serviceAccount.create=true --set serviceAccount.name=aws-load-balancer-controller
                             kubectl get pods -n kube-system
                             kubectl create namespace expense
