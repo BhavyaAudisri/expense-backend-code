@@ -146,12 +146,10 @@ EOF
                 withAWS(region:'us-east-1', credentials :'AWS-CREDS') {
                     sh """
                         aws ecr get-login-password --region ${REGION_CODE} | docker login --username AWS --password-stdin 124355635734.dkr.ecr.us-east-1.amazonaws.com
-                        docker build -t ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${project}/${environment}/${component}:${appVersion} .
                         docker build -t ${project}/${environment}/${component} .
                         docker tag ${project}/${environment}/${component}:${appVersion} 124355635734.dkr.ecr.us-east-1.amazonaws.com/${environment}/${component}:${appVersion}
-                        docker push 124355635734.dkr.ecr.${REGION_CODE}.amazonaws.com/expense/dev/backend:latest
                         docker images
-                        docker push ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${project}/${environment}/${component}:${appVersion}
+                        docker push ${ACC_ID}.dkr.ecr.${REGION_CODE}.amazonaws.com/${project}/${environment}/${component}:${appVersion}
                     """
             }
             }
