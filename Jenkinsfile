@@ -59,7 +59,7 @@ pipeline{
                    
             }
         }
-        }
+        
         stage('scan') {
             steps {
                 sh 'echo this is scan'
@@ -78,3 +78,4 @@ pipeline{
             echo " this section run when pipeline is failure"
         }
     }
+}
