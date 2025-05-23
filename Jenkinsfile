@@ -10,7 +10,7 @@ pipeline{
         PROJECT = 'expense'
         environment = 'dev'
         COMPONENT = 'backend'
-        account_id = '124355635734'
+        ACC_ID = '124355635734'
     }
     options {
         disableConcurrentBuilds()
