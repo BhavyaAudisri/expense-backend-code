@@ -124,7 +124,7 @@ EOF
 
     
 
-        /* stage ('read the version'){
+        stage ('read the version'){
             steps {
                 script {
                     def packageJson = readJSON file:'package.json'
@@ -168,7 +168,7 @@ EOF
             steps {
                 sh 'echo this is scan'
             }
-        } */
+        }
         
     }
     
