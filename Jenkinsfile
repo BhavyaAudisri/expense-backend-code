@@ -9,11 +9,10 @@ pipeline{
     environment {
         DEBUG = 'true'
         appVersion = '' //this will become global, we can use across pipeline
-        region = 'us-east-1'
         project = 'expense'
         environment = 'dev'
         component = 'backend'
-        account_id = '124355635734'
+       
         EC2_HOST = "expense-bastion.somisettibhavya.life" // e.g., ec2-34-201-XXX-XXX.compute-1.amazonaws.com
         DB_HOST = "mysql-dev.somisettibhavya.life"
         REGION_CODE = 'us-east-1'
@@ -54,7 +53,7 @@ pipeline{
                         EOL
 
                         aws sts get-caller-identity
-                        aws eks update-kubeconfig --region us-east-1 --name expense-dev
+                        aws eks update-kubeconfig --region ${REGION_CODE} --name expense-dev
                         kubectl get nodes
 EOF
                     '''
@@ -146,10 +145,13 @@ EOF
             steps {
                 withAWS(region:'us-east-1', credentials :'AWS-CREDS') {
                     sh """
-                        aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin 124355635734.dkr.ecr.us-east-1.amazonaws.com
-                        docker build -t ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${environment}/${component}:${appVersion} .
+                        aws ecr get-login-password --region ${REGION_CODE} | docker login --username AWS --password-stdin 124355635734.dkr.ecr.us-east-1.amazonaws.com
+                        docker build -t ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${project}/${environment}/${component}:${appVersion} .
+                        docker build -t ${project}/${environment}/${component} .
+                        docker tag ${project}/${environment}/${component}:${appVersion} 124355635734.dkr.ecr.us-east-1.amazonaws.com/${environment}/${component}:${appVersion}
+                        docker push 124355635734.dkr.ecr.${REGION_CODE}.amazonaws.com/expense/dev/backend:latest
                         docker images
-                        docker push ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${environment}/${component}:${appVersion}
+                        docker push ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${project}/${environment}/${component}:${appVersion}
                     """
             }
             }
