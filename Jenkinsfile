@@ -173,6 +173,7 @@ EOF
                             --image-ids file://images.json
 
                             rm images.json
+                    fi
 
                     """
             }
