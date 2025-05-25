@@ -51,12 +51,19 @@ EOL
                         [default]
                         region = us-east-1
                         output = json
-                        EOL
+EOL
 
                         aws sts get-caller-identity
+EOF
+                    '''
+                    sh '''
+                        curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.32.0/2024-12-20/bin/linux/amd64/kubectl
+                        chmod +x ./kubectl
+                        mv kubectl /usr/local/bin/kubectl
+                        kubectl --version
                         aws eks update-kubeconfig --region ${REGION_CODE} --name expense-dev
                         kubectl get nodes
-EOF
+
                     '''
                 }
             }
@@ -93,8 +100,9 @@ EOF
                 ]) {
                         sh '''
                             sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST
-                            curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-                            sudo mv /tmp/eksctl /usr/local/bin
+                            curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
+                            tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && rm eksctl_$PLATFORM.tar.gz
+                            mv /tmp/eksctl /usr/local/bin
                             eksctl version
                         '''
                         sh '''
