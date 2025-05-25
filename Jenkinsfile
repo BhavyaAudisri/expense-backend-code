@@ -99,8 +99,8 @@ EOF
                 ]) {
                         sh '''
                             sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST
-                            curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
-                            tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && rm eksctl_$PLATFORM.tar.gz
+                            curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_${PLATFORM}.tar.gz"
+                            tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && rm eksctl_${PLATFORM}.tar.gz
                             mv /tmp/eksctl /usr/local/bin
                             eksctl version
                         '''
