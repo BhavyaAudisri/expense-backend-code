@@ -186,11 +186,9 @@ EOF
             }
         }
         stage('Trigger Deploy'){
-             when {
-                expression { params.ACTION == 'apply' }
-            }
+             
             steps{
-                build job: 'backend-cd', parameters: [string(name: 'version', value: "${appVersion}"), string(name: 'ACTION', value: "apply")], wait: true
+                build job: 'backend-cd', parameters: [string(name: 'version', value: "${appVersion}"),], wait: true
             }
         }
         stage('scan') {
