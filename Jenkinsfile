@@ -130,7 +130,7 @@ EOF
                             helm repo add eks https://aws.github.io/eks-charts
                             helm upgrade --install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=$CLUSTER_NAME --set serviceAccount.create=true --set serviceAccount.name=aws-load-balancer-controller
                             kubectl get pods -n kube-system
-                            kubectl create namespace expense
+                            kubectl create namespace expense || true
 
                         '''
             }
