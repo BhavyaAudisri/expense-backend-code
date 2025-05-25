@@ -188,7 +188,7 @@ EOF
         stage('Trigger Deploy'){
              
             steps{
-                build job: 'backend-cd', parameters: [string(name: 'version', value: "${appVersion}"),], wait: true
+                build job: 'backend-cd', parameters: [string(name: 'version', value: "${appVersion}")], wait: true
             }
         }
         stage('scan') {
