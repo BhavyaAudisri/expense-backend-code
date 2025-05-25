@@ -93,6 +93,11 @@ EOF
                 ]) {
                         sh '''
                             sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USERNAME@$EC2_HOST
+                            curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+                            sudo mv /tmp/eksctl /usr/local/bin
+                            eksctl version
+                        '''
+                        sh '''
                             # Provide access to EKS through IAM Policy
                             eksctl create iamserviceaccount \\
                             --cluster=$CLUSTER_NAME \\
@@ -103,7 +108,7 @@ EOF
                             --region $REGION_CODE \\
                             --approve
                             
-                '''
+                        '''
             }
         }
     }
