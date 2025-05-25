@@ -155,25 +155,10 @@ EOF
             steps {
                 withAWS(region:'us-east-1', credentials :'AWS-CREDS') {
                     sh """
-                        if [ ${params.ACTION} == 'apply' ]
-                        then
                         aws ecr get-login-password --region ${REGION_CODE} | docker login --username AWS --password-stdin 124355635734.dkr.ecr.us-east-1.amazonaws.com
                         docker build -t 124355635734.dkr.ecr.us-east-1.amazonaws.com/${project}/${environment}/${component}:${appVersion} .
                         docker images
                         docker push ${ACC_ID}.dkr.ecr.${REGION_CODE}.amazonaws.com/${project}/${environment}/${component}:${appVersion}
-                        elif [ ${params.ACTION} == 'destroy' ]
-                        then
-                        aws ecr list-images \
-                            --repository-name expense/dev/backend \
-                            --query 'imageIds[*]' \
-                            --output json > images.json
-
-                            aws ecr batch-delete-image \
-                            --repository-name expense/dev/backend \
-                            --image-ids file://images.json
-
-                            rm images.json
-                    fi
 
                     """
             }
