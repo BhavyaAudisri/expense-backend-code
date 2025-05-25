@@ -28,7 +28,7 @@ pipeline{
     }
      
     stages {
-       /*  stage('Configure AWS on Bastion') {
+        stage('Configure AWS on Bastion') {
             steps {
                 withCredentials([
                     string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
@@ -135,7 +135,7 @@ EOF
                         '''
             }
         }
-    } */
+    }
 
         stage ('read the version'){
             steps {
