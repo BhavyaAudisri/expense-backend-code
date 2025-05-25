@@ -59,7 +59,7 @@ EOF
                         aws sts get-caller-identity
                         curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.32.0/2024-12-20/bin/linux/amd64/kubectl
                         chmod +x ./kubectl
-                        mv kubectl /usr/local/bin/kubectl
+                        sudo mv kubectl /usr/local/bin/kubectl
                         kubectl --version
                         aws eks update-kubeconfig --region ${REGION_CODE} --name expense-dev
                         kubectl get nodes
