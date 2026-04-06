@@ -1,20 +1,21 @@
 {
-  "name": "Expense 3 Tier App",
+  "name": "expense-3-tier-app",
   "version": "1.0.0",
-  "description": "",
+  "description": "Expense Backend with MongoDB",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.19.0",
+    "body-parser": "^1.20.2",
     "cors": "^2.8.5",
-    "express": "^4.17.1",
-    "mysql2": "latest",
-    "node-fetch": "^2.6.1",
-    "moment" : "latest"
+    "dotenv": "^16.4.5",
+    "express": "^4.18.2",
+    "mongoose": "^8.3.0",
+    "moment": "^2.30.1"
   }
 }
